@@ -154,7 +154,7 @@
 
 测试终于加了关于post的测试。
 
-```
+```python
 	def test_POSTBIN_GET_POST_FILES(self):
 
 		bin = requests.post('http://www.postbin.org/')
@@ -198,7 +198,7 @@ StringIO 是一个可以把 String 强制转换成 类似于 FILE 类的东西�
 
 也就是说，在post和put方法里面加入files 参数来支持，可以是StirngIO类型，也可以是File类型（maybe），上源码细节。
 
-```
+```python
 		elif self.method == 'POST':
 			if (not self.sent) or anyway:
 
@@ -225,7 +225,7 @@ StringIO 是一个可以把 String 强制转换成 类似于 FILE 类的东西�
 
 好，转战 multipart_encode。当post 一个文件的时候，数据要以MIME 格式分块，客户端生成随机的 boundry来标记一块的开头和结尾，并且需要在 header中加入 Content-Length 来表明文件大小。所以这个函数大致是干这些事情。我把注释写在后面。
 
-```
+```python
 def multipart_encode(params, boundary=None, cb=None):
     if boundary is None:
         boundary = gen_boundary()	# 生成随机字符串作为 boundary
@@ -257,7 +257,7 @@ def multipart_encode(params, boundary=None, cb=None):
 
 v0.2.1
 
-```
+```python
 				try:
 					opener = self._get_opener()
 					resp =  opener(req)
@@ -278,7 +278,7 @@ v0.2.1
 
 v0.2.2
 
-```
+```python
 				try:
 					resp = opener(req)
 					self._build_response(resp)
@@ -294,7 +294,7 @@ v0.2.2
 
 在 core 代码最顶部加了如下部分。
 
-```
+```python
 try:
 	import eventlet
 	eventlet.monkey_patch()
@@ -325,12 +325,12 @@ if not 'eventlet' in locals():
 
 同样以get 举例
 
-```
+```python
 r.cookiejar = cookies
 ```
 加入了cookies 参数
 
-```
+```python
 if self.cookiejar:
 
 	cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
@@ -359,7 +359,7 @@ if self.cookiejar:
 
 改进了类  Response 的表现形式。来看一下对新的 Response 类的新加的测试内容,第一个测试。
 
-```
+```python
 	def test_nonzero_evaluation(self):
 		r = requests.get('http://google.com/some-404-url')
 		self.assertEqual(bool(r), False)
@@ -370,7 +370,7 @@ if self.cookiejar:
 
  对返回的 Response 类进行 bool 运算，相关实现代码如下。
 
-```
+```python
 	def __nonzero__(self):
 		"""Returns true if status_code is 'OK'."""
 		return not self.error
@@ -381,7 +381,7 @@ if self.cookiejar:
 
 当调用opener(resq)的时候，出现异常，会更改self.error 变量。
 
-```
+```python
 try:
 	resp = opener(req)
 	self._build_response(resp)
@@ -395,7 +395,7 @@ except urllib2.HTTPError as why:
 
 第二个测试。
 
-```
+```python
 def test_request_ok_set(self):
 	r = requests.get('http://google.com/some-404-url')
 	self.assertEqual(r.ok, False)
@@ -405,7 +405,7 @@ def test_request_ok_set(self):
 
 第三个测试
 
-```
+```python
 def test_status_raising(self):
 	r = requests.get('http://google.com/some-404-url')
 	self.assertRaises(requests.HTTPError, r.raise_for_status)
@@ -417,7 +417,7 @@ def test_status_raising(self):
 ```
 相应代码：
 
-```
+```python
 	def raise_for_status(self):
 		"""Raises stored HTTPError if one exists."""
 		if self.error:
@@ -447,7 +447,7 @@ def test_status_raising(self):
  ** 3. 自动验证测试 **
 这个版本最主要的改动，就是优化了测试文件。把测试文件改成了继承 TestSite的类（话说这不是常识吗...）
 
-```
+```python
 
 class RequestsTestSuite(unittest.TestCase):
     """Requests test cases."""
@@ -470,7 +470,7 @@ class RequestsTestSuite(unittest.TestCase):
 
 哈哈哈，我上一遍质疑他的东西，果然在五天后就改过来了～
 
-```
+```python
 class Request(object):
     """The :class:`Request` object. It carries out all functionality of
     Requests. Recommended interface is with the Requests functions.
@@ -521,7 +521,7 @@ class Request(object):
 
 之前
 
-```
+```python
     def test_AUTH_HTTPS_200_OK_GET(self):
         auth = requests.AuthObject('requeststest', 'requeststest')
         url = 'https://convore.com/api/account/verify.json'
@@ -541,7 +541,7 @@ class Request(object):
 
 现在
 
-```
+```python
 	def test_AUTH_HTTPS_200_OK_GET(self):
         auth = ('requeststest', 'requeststest')
         url = 'https://convore.com/api/account/verify.json'
@@ -570,7 +570,7 @@ class Request(object):
 
 关于这一点更新，体现在这个测试中
 
-```
+```python
     def test_HTTP_200_OK_GET_WITH_MIXED_PARAMS(self):
         heads = {'User-agent': 'Mozilla/5.0'}
         r = requests.get('http://google.com/search?test=true', params={'q': 'test'}, headers=heads)
@@ -581,13 +581,13 @@ class Request(object):
 
 send中 
 
-```
+```python
 if self.method in ('GET', 'HEAD', 'DELETE'):
             req = _Request(self._build_url(self.url, self._enc_data), method=self.method)
 ```
 self._build_url() 
 
-```
+```python
     @staticmethod
     def _build_url(url, data):
         """Build URLs."""
@@ -608,7 +608,7 @@ self._build_url()
 
 这一点更新，跟上一点差不多。代码如下。
 
-```
+```python
 if self.files:
 	register_openers()
     if self.data:
@@ -626,7 +626,7 @@ if self.files:
 
 首先是Request 初始化时，关于Auth 的细节。
 
-```
+```python
 class Reuqest(object):
 
 	def __init__(self):
@@ -650,7 +650,7 @@ auth_manager 是一个全局的 AuthManager() 对象。
 
 代码如下
 
-```
+```python
 class AuthManager(object):
     """Authentication Manager."""
     
@@ -674,7 +674,7 @@ class AuthManager(object):
 
 基本在这个函数中，可窥一斑。
 
-```
+```python
 def reduce_uri(self, uri, default_port=True):
         """Accept authority or URI and extract only the authority and path."""
         # note HTTP URLs do not have a userinfo component
