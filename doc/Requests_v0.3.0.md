@@ -217,7 +217,7 @@ StringIO 是一个可以把 String 强制转换成 类似于 FILE 类的东西�
 ```
 加了一层 if self.files 的判断，进入后做了两件事。 1. register_opener(), 2. multipart_encode(self.files)
 
-这两个函数，又是调用了另一个轮子...这两个代码文件直接被copy到requests/packages中。这个轮子的作者是 Chris AtLee，我去他 github 扒了一下，并不能找到这个仓库。感谢他让我几个小时欲仙欲死 ：）
+这两个函数，又是调用了另外两个轮子（streaminghttp.py, encode.py）...这两个代码文件直接被copy到requests/packages中。streaminghttp.py这个轮子的作者是 Chris AtLee，我去他 github 扒了一下，并不能找到这个仓库。感谢他让我几个小时欲仙欲死 ：）
 
 我猜可能2011年，urllib2并不支持文件上传，（现在的版本有看到fileHandler）。他觉得已经有了，就把仓库给删了？或者标准库用的就是他的代码哈哈哈～
 
