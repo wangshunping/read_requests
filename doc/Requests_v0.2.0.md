@@ -64,7 +64,7 @@ Most existing Python modules for dealing HTTP requests are insane. I have to loo
 
 But this one's different. This one's going to be awesome. And simple.
 
-Really simple. 
+Really simple.
 
 ```
 
@@ -140,7 +140,7 @@ API 部分，安装部分，就直接跳过吧。
 
 requests 代码之前，先从测试代码开始吧。
 
-```
+```python
 class RequestsTestSuite(unittest.TestCase):
 	"""Requests test cases."""
 	
@@ -183,24 +183,24 @@ class RequestsTestSuite(unittest.TestCase):
 
 self.assertRaises 这个用法我没用过，去翻了一个标准库文档，文档里面有这样一个例子，还是很好玩的：
 
+```python
+def test_split(self):
+	# check that s.split fails when the separator is not a string
+	with self.assertRaises(TypeError):
+		s.split(2)
 ```
-	def test_split(self):
-      # check that s.split fails when the separator is not a string
-      with self.assertRaises(TypeError):
-          s.split(2)
 
-```
 函数定义：
-assertRaises(exc, fun, *args, **kwds)
+`assertRaises(exc, fun, *args, **kwds)`
 
 
 ### 0x05
 
-终于开始撸代码了，requests 包只包含一个__init__.py 和 core.py, core.py 405行。
+终于开始撸代码了，requests 包只包含一个`__init__.py` 和 `core.py`, `core.py` 405行。
 
-当使用 requests.get('www.baidu.com')时，直接到requests 包定义的相应函数，以 get 举例。
+当使用 `requests.get('www.baidu.com')`时，直接到requests 包定义的相应函数，以 get 举例。
 
-```
+```python
 def get(url, params={}, headers={}, auth=None):
 	"""Sends a GET request. Returns :class:`Response` object.
 
@@ -225,7 +225,7 @@ def get(url, params={}, headers={}, auth=None):
 ```
 先会实例化一个 Request, Request 类定义在47行。
 
-```
+```python
 class Request(object):
 	"""The :class:`Request` object. It carries out all functionality of
 	Requests. Recommended interface is with the Requests functions.
@@ -257,7 +257,7 @@ class Request(object):
 
 在 `__setattr__`  对method做了限制。
 
-```
+```python
 	def __setattr__(self, name, value):
 		if (name == 'method') and (value):
 			if not value in self._METHODS:
@@ -269,7 +269,7 @@ class Request(object):
 这也是一个好玩的用法，我比较水啦，如果是我，我会直接在类初始化的时候搞定这些...
 就像下面这样。
 
-```
+```python
 class Request(object):
 	"""The :class:`Request` object. writtern by Lionel Wang	
 	"""
@@ -292,7 +292,7 @@ class Request(object):
 
 有没有高人跟我说下这样的好处？
 
-```
+```python
 r,auth = _detect_auth(url, auth)
 ```
 
@@ -302,52 +302,52 @@ r,auth = _detect_auth(url, auth)
 
 在Requests.send() 里面，对 method 的不同，做了不一样的处理，我们只看get。
 
-```
+```python
 def send(self, anyway=False):
-		"""Sends the request. Returns True of successfull, false if not.
-		    If there was an HTTPError during transmission,
-		    self.response.status_code will contain the HTTPError code.
+	"""Sends the request. Returns True of successfull, false if not.
+		If there was an HTTPError during transmission,
+		self.response.status_code will contain the HTTPError code.
 
-		    Once a request is successfully sent, `sent` will equal True.
-		
-		    :param anyway: If True, request will be sent, even if it has
-		    already been sent.
-		"""
-		self._checks()
+		Once a request is successfully sent, `sent` will equal True.
+	
+		:param anyway: If True, request will be sent, even if it has
+		already been sent.
+	"""
+	self._checks()
 
-		success = False
-		
-		if self.method in ('GET', 'HEAD', 'DELETE'):
-			if (not self.sent) or anyway:
+	success = False
+	
+	if self.method in ('GET', 'HEAD', 'DELETE'):
+		if (not self.sent) or anyway:
 
-				# url encode GET params if it's a dict
-				if isinstance(self.params, dict):
-					params = urllib.urlencode(self.params)
-				else:
+			# url encode GET params if it's a dict
+			if isinstance(self.params, dict):
+				params = urllib.urlencode(self.params)
+			else:
 
-					params = self.params
+				params = self.params
 
-				req = _Request(("%s?%s" % (self.url, params)), method=self.method)
+			req = _Request(("%s?%s" % (self.url, params)), method=self.method)
 
-				if self.headers:
-					req.headers = self.headers
+			if self.headers:
+				req.headers = self.headers
 
-				opener = self._get_opener()
+			opener = self._get_opener()
 
-				try:
-					resp = opener(req)
-					self.response.status_code = resp.code
-					self.response.headers = resp.info().dict
-					if self.method.lower() == 'get':
-						self.response.content = resp.read()
+			try:
+				resp = opener(req)
+				self.response.status_code = resp.code
+				self.response.headers = resp.info().dict
+				if self.method.lower() == 'get':
+					self.response.content = resp.read()
 
-					success = True
-				except urllib2.HTTPError, why:
-					self.response.status_code = why.code
-					
-		self.sent = True if success else False
-		
-		return success
+				success = True
+			except urllib2.HTTPError, why:
+				self.response.status_code = why.code
+				
+	self.sent = True if success else False
+	
+	return success
 ```
 self._checks() 是封装了url是否非None 的函数。pass
 
@@ -355,25 +355,23 @@ self._checks() 是封装了url是否非None 的函数。pass
 
 正如作者所说，这个版本封装了urllib, urllib2 的方法，像我这种被reqeusts 宠坏了的人，为了拆他，滚去翻urllib2的文档了 （；￣ェ￣）
 
+```python
+	if isinstance(self.params, dict):
+		params = urllib.urlencode(self.params)
+	else:
+
+		params = self.params
+
+	req = _Request(("%s?%s" % (self.url, params)), method=self.method)
 ```
-		if isinstance(self.params, dict):
-			params = urllib.urlencode(self.params)
-		else:
 
-			params = self.params
+如果传过来parms形如 
 
-		req = _Request(("%s?%s" % (self.url, params)), method=self.method)
-```
-
-如果传过来parms 形如 
-
-```
+```python
 parms ={'age':23, 'name':wsp}, url='www.baidu.com'
-
-
 ```
 
-将他转换成 www.baidu.com?age=23&name=wsp
+将他转换成`www.baidu.com?age=23&name=wsp`
 
 urllib.urlencode(query, [,doseq])
 
@@ -384,7 +382,7 @@ urllib.urlencode(query, [,doseq])
 _Request 是继承了 urllib2.Requsts 的类。
 代码如下
 
-```
+```python
 class _Request(urllib2.Request):
 	"""Hidden wrapper around the urllib2.Request object. Allows for manual
 	setting of HTTP methods.
@@ -410,15 +408,15 @@ class _Request(urllib2.Request):
 
 最后组装返回的类，没什么好说的了
 
-```
-	self.response.status_code = resp.code
-	self.response.headers = resp.info().dict
-	self.response.content = resp.read()
+```python
+self.response.status_code = resp.code
+self.response.headers = resp.info().dict
+self.response.content = resp.read()
 ```
 
 不过try except 写的很好玩。
 
-```
+```python
 except urllib2.HTTPError, why:
 	self.response.status_code = why.code
 ```
