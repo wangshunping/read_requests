@@ -258,12 +258,12 @@ class Request(object):
 在 `__setattr__`  对method做了限制。
 
 ```python
-	def __setattr__(self, name, value):
-		if (name == 'method') and (value):
-			if not value in self._METHODS:
-				raise InvalidMethod()
-		
-		object.__setattr__(self, name, value)
+def __setattr__(self, name, value):
+	if (name == 'method') and (value):
+		if not value in self._METHODS:
+			raise InvalidMethod()
+	
+	object.__setattr__(self, name, value)
 ```
 
 这也是一个好玩的用法，我比较水啦，如果是我，我会直接在类初始化的时候搞定这些...
@@ -356,13 +356,12 @@ self._checks() 是封装了url是否非None 的函数。pass
 正如作者所说，这个版本封装了urllib, urllib2 的方法，像我这种被reqeusts 宠坏了的人，为了拆他，滚去翻urllib2的文档了 （；￣ェ￣）
 
 ```python
-	if isinstance(self.params, dict):
-		params = urllib.urlencode(self.params)
-	else:
+if isinstance(self.params, dict):
+	params = urllib.urlencode(self.params)
+else:
+	params = self.params
 
-		params = self.params
-
-	req = _Request(("%s?%s" % (self.url, params)), method=self.method)
+req = _Request(("%s?%s" % (self.url, params)), method=self.method)
 ```
 
 如果传过来parms形如 
